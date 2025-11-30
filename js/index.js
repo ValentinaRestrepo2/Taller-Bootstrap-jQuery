@@ -1,4 +1,4 @@
-// Función auxiliar para generar aleatorios 
+// Función para generar aleatorios 
 function randomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
@@ -65,7 +65,6 @@ function calcularPromedio() {
   }
 
   filas.each(function () {
-    // La edad está en la columna índice 2 (0: nombre, 1: fecha, 2: edad)
     let edad = parseInt($(this).find("td").eq(2).text());
     suma += edad;
   });

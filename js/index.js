@@ -1,16 +1,24 @@
+// Función auxiliar para generar aleatorios 
+function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+// Botón [Generar]
 $("#btnGenerar").click(function () {
-  let nombre = "Persona " + Math.floor(Math.random() * 9 + 1);
-  let dia = Math.floor(Math.random() * 30 + 1);
-  let mes = Math.floor(Math.random() * 12 + 1);
-  let anio = Math.floor(Math.random() * (2020 - 1980 + 1) + 1980);
+  let nombre = "Persona " + randomInt(1, 9);
+  let dia = randomInt(1, 30);
+  let mes = randomInt(1, 12);
+  let anio = randomInt(1980, 2020);
 
   $("#nombre").val(nombre);
   $("#dia").val(dia);
   $("#mes").val(mes);
   $("#anio").val(anio);
 
-  let edad = 2025 - anio;
-
+  let anioActual = new Date().getFullYear();
+  let edad = anioActual - anio;
+  
+  $("#imagenEstado").show();
   if (edad < 18) {
     $("#imagenEstado").attr("src", "images/jovenes.png");
   } else {
@@ -18,6 +26,7 @@ $("#btnGenerar").click(function () {
   }
 });
 
+// Botón [Insertar]
 $("#btnInsertar").click(function () {
   let nombre = $("#nombre").val();
   let dia = $("#dia").val();
@@ -35,40 +44,52 @@ $("#btnInsertar").click(function () {
   let fechaCompleta = `${dia}-${mes}-${anio}`;
 
   $("#tablaPersonas tbody").append(`
-        <tr id="tr_${nombre}">
+        <tr>
             <td>${nombre}</td>
             <td>${fechaCompleta}</td>
             <td>${edad}</td>
         </tr>
     `);
+
   calcularPromedio();
 });
 
+// Función para calcular promedio
 function calcularPromedio() {
   let filas = $("#tablaPersonas tbody tr");
   let suma = 0;
 
+  if (filas.length === 0) {
+      $("#promedio").val(0);
+      return;
+  }
+
   filas.each(function () {
+    // La edad está en la columna índice 2 (0: nombre, 1: fecha, 2: edad)
     let edad = parseInt($(this).find("td").eq(2).text());
     suma += edad;
   });
 
-  let promedio = (suma / filas.length).toFixed(1);
+  let promedio = (suma / filas.length).toFixed(1); 
   $("#promedio").val(promedio);
 }
 
+// Botón [Recorrer y Resaltar]
 $("#btnResaltar").click(function () {
   let promedio = parseFloat($("#promedio").val());
 
+  if (isNaN(promedio)) {
+    alert("Primero inserte registros para calcular el promedio.");
+    return;
+  }
+
   $("#tablaPersonas tbody tr").each(function () {
     let edad = parseInt($(this).find("td").eq(2).text());
-
+    $(this).removeClass("table-success table-danger");
     if (edad > promedio) {
-      $(this).css("background-color", "#d4edda");
+      $(this).addClass("table-success"); 
     } else if (edad < promedio) {
-      $(this).css("background-color", "#f8d7da");
-    } else {
-      $(this).css("background-color", "");
-    }
+      $(this).addClass("table-danger"); 
+    } 
   });
 });
